@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import ezdxf
+from .utilities import inset_triangle, place_holes
 
 
 def plane_2d_frame(point, normal, axis):
@@ -101,37 +102,11 @@ def smaller_triangle_aab(triangles):
     all_holes = []
     smaller_triangles = []
     for triangle in triangles:
-        edge1 = triangle[1] - triangle[0]
-        edge2 = triangle[2] - triangle[0]
-        edge3 = triangle[2] - triangle[1]
-        print(np.linalg.norm(edge1))
-        print(np.linalg.norm(edge2))
-        print(np.linalg.norm(edge3))
-        print()
-        normalized_edge1 = edge1 / np.linalg.norm(edge1)
-        normalized_edge2 = edge2 / np.linalg.norm(edge2)
-
-        smaller_triangle = [triangle[0] + 7.28 * normalized_edge1 + 10.01 * normalized_edge2,
-                            triangle[0] + 7.28 * normalized_edge1 + 138.07 * normalized_edge2,
-                            triangle[0] + 100.34 * normalized_edge1 + 10.01 * normalized_edge2]
-
+        smaller_triangle = inset_triangle(triangle, [[7.28, 10.01], [7.28, 138.07], [100.34, 10.01]])
         smaller_triangles.append(smaller_triangle)
 
-        holes = [triangle[0] + 12.3 * normalized_edge1 + 15.9 * normalized_edge2,
-                 triangle[0] + 12.3 * normalized_edge1 + 125.28 * normalized_edge2,
-                 triangle[0] + 88.85 * normalized_edge1 + 17.92 * normalized_edge2]
-
+        holes = place_holes(triangle, [[12.3, 15.9], [12.3, 125.28], [88.85, 17.92]])
         all_holes.append(holes)
-
-        smaller_edge1 = smaller_triangle[1] - smaller_triangle[0]
-        smaller_edge2 = smaller_triangle[2] - smaller_triangle[0]
-        smaller_edge3 = smaller_triangle[2] - smaller_triangle[1]
-
-        print(np.linalg.norm(smaller_edge1))
-        print(np.linalg.norm(smaller_edge2))
-        print(np.linalg.norm(smaller_edge3))
-        print()
-        # uniform_sampling_triangle(triangle, normal)
     return all_holes, smaller_triangles
 
 
@@ -139,37 +114,12 @@ def smaller_triangle_bcc(triangles):
     all_holes = []
     smaller_triangles = []
     for triangle in triangles:
-        edge1 = triangle[1] - triangle[0]
-        edge2 = triangle[2] - triangle[0]
-        print(np.linalg.norm(edge1))
-        print(np.linalg.norm(edge2))
-        print()
-        normalized_edge1 = edge1 / np.linalg.norm(edge1)
-        normalized_edge2 = edge2 / np.linalg.norm(edge2)
-
-        normal = np.cross(normalized_edge1, normalized_edge2)
-
-        smaller_triangle = [triangle[0] + 7.91 * normalized_edge1 + 8.39 * normalized_edge2,
-                            triangle[0] + 142.29 * normalized_edge1 + 8.39 * normalized_edge2,
-                            triangle[0] + 7.91 * normalized_edge1 + 151.1 * normalized_edge2]
-
+        smaller_triangle = inset_triangle(triangle, [[7.91, 8.39], [142.29, 8.39], [7.91, 151.1]])
         smaller_triangles.append(smaller_triangle)
 
-        holes = [triangle[0] + 13.66 * normalized_edge1 + 13.66 * normalized_edge2,
-                 triangle[0] + 131.57 * normalized_edge1 + 13.66 * normalized_edge2,
-                 triangle[0] + 13.42 * normalized_edge1 + 139.4 * normalized_edge2]
-
+        holes = place_holes(triangle, [[13.66, 13.66], [131.57, 13.66], [13.42, 139.4]])
         all_holes.append(holes)
 
-        smaller_edge1 = smaller_triangle[1] - smaller_triangle[0]
-        smaller_edge2 = smaller_triangle[2] - smaller_triangle[0]
-        smaller_edge3 = smaller_triangle[2] - smaller_triangle[1]
-
-        print(np.linalg.norm(smaller_edge1))
-        print(np.linalg.norm(smaller_edge2))
-        print(np.linalg.norm(smaller_edge3))
-        print()
-        # uniform_sampling_triangle(triangle, normal)
     return all_holes, smaller_triangles
 
 
