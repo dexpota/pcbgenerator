@@ -3,7 +3,7 @@ import numpy as np
 
 class OctahedronV2:
     # Faces with AAB edges, all units are in m
-    triangles_aab = (
+    triangles_aab = np.array((
         (np.array((0.223607, 0.111803, 0.000000)),
          np.array((0.250000, 0.000000, 0.000000)),
          np.array((0.223607, 0.000000, 0.111803))),
@@ -13,10 +13,10 @@ class OctahedronV2:
         (np.array((-0.000000, 0.223607, 0.111803)),
          np.array((0.000000, 0.250000, 0.000000)),
          np.array((0.111803, 0.223607, 0.000000)))
-    )
+    ))
 
     # Faces with BCC edges, all units are in m
-    triangles_bcc = (
+    triangles_bcc = np.array((
         (np.array((-0.000000, 0.111803, 0.223607)),
          np.array((0.111803, 0.000000, 0.223607)),
          np.array((0.144338, 0.144338, 0.144338))),
@@ -35,4 +35,4 @@ class OctahedronV2:
         (np.array((-0.000000, 0.223607, 0.111803)),
          np.array((0.111803, 0.223607, 0.000000)),
          np.array((0.144338, 0.144338, 0.144338)))
-    )
+    ))

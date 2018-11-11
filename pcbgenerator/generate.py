@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import ezdxf
+from .octahedron import OctahedronV2
 from .utilities import inset_triangle, place_holes
 
 
@@ -95,7 +96,7 @@ def uniform_sampling_triangle(filename, triangle, holes, ax, ax2d, color="blue")
                 if not np.isnan(direction2d[0]) and not np.isnan(direction2d[1]):
                     draw_polyline(modelspace, compute_rectangle(origin2d, direction2d))
 
-    # drawing.saveas(filename)
+    drawing.saveas(filename)
 
 
 def smaller_triangle_aab(triangles):
@@ -124,44 +125,16 @@ def smaller_triangle_bcc(triangles):
 
 
 def main():
-    triangles_aab = (
-        (1000 * np.array((0.223607, 0.111803, 0.000000)),
-         1000 * np.array((0.250000, 0.000000, 0.000000)),
-         1000 * np.array((0.223607, 0.000000, 0.111803))),  # face AAB
-        (1000 * np.array((-0.000000, 0.111803, 0.223607)),
-         1000 * np.array((-0.000000, 0.000000, 0.250000)),
-         1000 * np.array((0.111803, 0.000000, 0.223607))),  # face AAB
-        (1000 * np.array((-0.000000, 0.223607, 0.111803)),
-         1000 * np.array((0.000000, 0.250000, 0.000000)),
-         1000 * np.array((0.111803, 0.223607, 0.000000)))  # face AAB
-    )
-
-    triangles_bcc = (
-        (1000 * np.array((-0.000000, 0.111803, 0.223607)),
-         1000 * np.array((0.111803, 0.000000, 0.223607)),
-         1000 * np.array((0.144338, 0.144338, 0.144338))),  # face bcc
-        (1000 * np.array((0.111803, 0.000000, 0.223607)),
-         1000 * np.array((0.223607, 0.000000, 0.111803)),
-         1000 * np.array((0.144338, 0.144338, 0.144338))),  # face bcc
-        (1000 * np.array((0.223607, 0.111803, 0.000000)),
-         1000 * np.array((0.223607, 0.000000, 0.111803)),
-         1000 * np.array((0.144338, 0.144338, 0.144338))),  # face bcc
-        (1000 * np.array((0.111803, 0.223607, 0.000000)),
-         1000 * np.array((0.223607, 0.111803, 0.000000)),
-         1000 * np.array((0.144338, 0.144338, 0.144338))),  # face bcc
-        (1000 * np.array((-0.000000, 0.223607, 0.111803)),
-         1000 * np.array((-0.000000, 0.111803, 0.223607)),
-         1000 * np.array((0.144338, 0.144338, 0.144338))),  # face bcc
-        (1000 * np.array((-0.000000, 0.223607, 0.111803)),
-         1000 * np.array((0.111803, 0.223607, 0.000000)),
-         1000 * np.array((0.144338, 0.144338, 0.144338)))  # face bcc
-    )
+    # 1. Gather data from source
+    triangles_aab = OctahedronV2.triangles_aab * 1000  # from meters to millimeters
+    triangles_bcc = OctahedronV2.triangles_bcc * 1000  # from meters to millimeters
 
     holes_aab, smaller_aab = smaller_triangle_aab(triangles_aab)
     holes_bcc, smaller_bcc = smaller_triangle_bcc(triangles_bcc)
 
     fig = plt.figure(1)
     ax = fig.add_subplot(111, projection='3d')
+    ax.view_init(elev=45, azim=45)
 
     fig2d = plt.figure(2)
     ax2d = fig2d.add_subplot(111)
