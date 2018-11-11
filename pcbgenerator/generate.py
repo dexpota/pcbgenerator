@@ -3,98 +3,20 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import ezdxf
 from .octahedron import OctahedronV2
-from .utilities import inset_triangle, place_holes
+from .utilities import inset_triangle, place_holes, draw_polyline, uniform_sampling_triangle
 
 
-def plane_2d_frame(point, normal, axis):
-    o = point
-    x = axis / np.linalg.norm(axis)
-    y = np.cross(normal, x)
-    y /= np.linalg.norm(y)
-    return o, x, y
-
-
-def project_point_to_2d_frame(frame, point):
-    t1 = np.dot(frame[1], point - frame[0])
-    t2 = np.dot(frame[2], point - frame[0])
-    return t1, t2
-
-
-def project_vector_to_2d_frame(frame, point, vector):
-    t1, t2 = project_point_to_2d_frame(frame, point)
-    t3, t4 = project_point_to_2d_frame(frame, point + vector)
-    return (t1, t2), (t3 - t1, t4 - t2)
-
-
-def draw_polyline(modelspace, line):
-    modelspace.add_polyline2d(line, {"closed": True})
-
-
-def compute_rectangle(origin2d, direction2d):
-    tangent = np.array([direction2d[1], -direction2d[0]])
-    direction2d /= np.linalg.norm(direction2d)
-    tangent /= np.linalg.norm(tangent)
-
-    origin2d = np.array(origin2d)
-
-    first_point = origin2d - direction2d/2.0 * 5 - tangent/2.0 * 2
-    second_point = first_point + tangent * 2
-    third_point = second_point + direction2d * 5
-    fourth_point = third_point - tangent * 2
-    return list(first_point), list(second_point), list(third_point), list(fourth_point)
-
-
-def uniform_sampling_triangle(filename, triangle, holes, ax, ax2d, color="blue"):
+def generate_dxf(filename, triangle2d, rectangles, centers):
     drawing = ezdxf.new(dxfversion='AC1024')
     modelspace = drawing.modelspace()
 
-    edge1 = triangle[1] - triangle[0]
-    edge2 = triangle[2] - triangle[0]
-
-    normalized_edge1 = edge1 / np.linalg.norm(edge1)
-    normalized_edge2 = edge2 / np.linalg.norm(edge2)
-
-    normal = np.cross(normalized_edge1, normalized_edge2)
-
-    frame_2d = plane_2d_frame(triangle[0], normal, edge1)
-
-    triangle2d = [project_point_to_2d_frame(frame_2d, triangle[0]),
-                  project_point_to_2d_frame(frame_2d, triangle[1]),
-                  project_point_to_2d_frame(frame_2d, triangle[2])]
-
     draw_polyline(modelspace, triangle2d)
 
-    for hole in holes:
-        center = project_point_to_2d_frame(frame_2d, hole)
-        modelspace.add_circle(center, 1)
+    for hole in centers:
+        modelspace.add_circle(hole, 1)
 
-    up = np.array((0, 0, 1))
-
-    ax2d.scatter(triangle2d[0][0], triangle2d[0][1])
-    ax2d.scatter(triangle2d[1][0], triangle2d[1][1])
-    ax2d.scatter(triangle2d[2][0], triangle2d[2][1])
-    for u in np.linspace(0, 1, 10):
-        for v in np.linspace(0, 1, 10):
-            if u + v <= 1.0:
-                point = triangle[0] + u*edge1 + v*edge2
-                pi_normal = np.cross(point, up)
-
-                direction = np.cross(normal, pi_normal)
-                direction /= np.linalg.norm(direction)
-                direction *= 10
-                # plt.scatter(point[0], point[1])
-                ax.quiver(point[0], point[1], point[2],
-                          direction[0], direction[1], direction[2])
-                ax.scatter(point[0], point[1], point[2], color=color)
-
-                point2d = project_point_to_2d_frame(frame_2d, point)
-                # ax2d.scatter(point2d[0], point2d[1])
-
-                origin2d, direction2d = project_vector_to_2d_frame(frame_2d, point, direction)
-                # ax2d.quiver(origin2d[0], origin2d[1], direction2d[0], direction2d[1])
-
-                if not np.isnan(direction2d[0]) and not np.isnan(direction2d[1]):
-                    draw_polyline(modelspace, compute_rectangle(origin2d, direction2d))
+    for rectangle in rectangles:
+        draw_polyline(modelspace, rectangle)
 
     drawing.saveas(filename)
 
@@ -142,12 +64,14 @@ def main():
     filenames = ["aab1.dxf", "aab2.dxf", "aab3.dxf"]
     colors = ["beige", "black", "blue"]
     for filename, holes, triangle, color in zip(filenames, holes_aab, smaller_aab, colors):
-        uniform_sampling_triangle(filename, triangle, holes, ax, ax2d, color)
+        triangle2d, rectangles, centers = uniform_sampling_triangle(triangle, holes)
+        generate_dxf(filename, triangle2d, rectangles, centers)
 
     filenames = ["bcc1.dxf", "bcc2.dxf", "bcc3.dxf", "bcc4.dxf", "bcc5.dxf", "bcc6.dxf"]
     colors = ["brown", "coral", "cyan", "darkgreen", "gold", "green"]
     for filename, holes, triangle, color in zip(filenames, holes_bcc, smaller_bcc, colors):
-        uniform_sampling_triangle(filename, triangle, holes, ax, ax2d, color)
+        triangle2d, rectangles, centers = uniform_sampling_triangle(triangle, holes)
+        generate_dxf(filename, triangle2d, rectangles, centers)
 
     plt.interactive(True)
     plt.show(block=True)

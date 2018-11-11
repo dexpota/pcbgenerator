@@ -65,7 +65,7 @@ def compute_rectangle(origin2d, direction2d, d1, d2):
     return [first_point, second_point, third_point, fourth_point]
 
 
-def uniform_sampling_triangle(triangle):
+def uniform_sampling_triangle(triangle, holes):
     edge1 = triangle[1] - triangle[0]
     edge2 = triangle[2] - triangle[0]
 
@@ -80,7 +80,14 @@ def uniform_sampling_triangle(triangle):
                   project_point_to_2d_frame(frame_2d, triangle[1]),
                   project_point_to_2d_frame(frame_2d, triangle[2])]
 
+    centers = []
+    for hole in holes:
+        center = project_point_to_2d_frame(frame_2d, hole)
+        centers.append(center)
+
     up = np.array((0, 0, 1))
+
+    rectangles = []
 
     for u in np.linspace(0, 1, 10):
         for v in np.linspace(0, 1, 10):
@@ -97,5 +104,10 @@ def uniform_sampling_triangle(triangle):
                 origin2d, direction2d = project_vector_to_2d_frame(frame_2d, point, direction)
 
                 if not np.isnan(direction2d[0]) and not np.isnan(direction2d[1]):
-                    compute_rectangle(origin2d, direction2d, 5, 5)
+                    rectangles.append(compute_rectangle(origin2d, direction2d, 5, 5))
 
+    return triangle2d, rectangles, centers
+
+
+def draw_polyline(modelspace, line):
+    modelspace.add_polyline2d(line, {"closed": True})
