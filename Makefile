@@ -1,0 +1,16 @@
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-16s\033[0m %s\n", $$1, $$2}'
+
+Pipfile.lock: Pipfile
+	@pipenv lock
+
+requirements-dev.txt: Pipfile.lock ## Generate requirements file for developing from Pipenv.
+	@echo "+ $@"
+	@pipenv lock --requirements --dev > requirements-dev.txt
+
+requirements.txt: Pipfile.lock ## Generate requirements file from Pipenv
+	@echo "+ $@"
+	@pipenv lock --requirements > requirements.txt
