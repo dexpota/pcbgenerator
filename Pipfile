@@ -12,7 +12,6 @@ dxfgrabber = "*"
 [dev-packages]
 pre-commit = "*"
 coala = "*"
-coala-bears = "*"
 
 [requires]
 python_version = "3.6"
