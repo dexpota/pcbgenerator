@@ -19,3 +19,5 @@ installed on the system. You can follow these instructions:
     sudo apt install python2.7 kicad
     python2.7 -m pcbnew && echo "pcbnew installed!"
     ```
+    
+    - If you are going to use a virtual environment be sure to inherit this package from the global installation;
