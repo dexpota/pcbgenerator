@@ -51,6 +51,7 @@ def main():
     triangles_aab = OctahedronV2.triangles_aab * 1000  # from meters to millimeters
     triangles_bcc = OctahedronV2.triangles_bcc * 1000  # from meters to millimeters
 
+    # 2. Compute the mounting holes and the coordinates of a smaller triangle
     holes_aab, smaller_aab = smaller_triangle_aab(triangles_aab)
     holes_bcc, smaller_bcc = smaller_triangle_bcc(triangles_bcc)
 
@@ -61,9 +62,11 @@ def main():
     fig2d = plt.figure(2)
     ax2d = fig2d.add_subplot(111)
 
+    # 3. Output each face on separate DXF file.
     filenames = ["aab1.dxf", "aab2.dxf", "aab3.dxf"]
     colors = ["beige", "black", "blue"]
     for filename, holes, triangle, color in zip(filenames, holes_aab, smaller_aab, colors):
+        # 4. Compute the 2d triangle, the led positions and rectangular areas and hole centers.
         triangle2d, rectangles, centers = uniform_sampling_triangle(triangle, holes)
         generate_dxf(filename, triangle2d, rectangles, centers)
 

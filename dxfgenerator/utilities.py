@@ -74,24 +74,31 @@ def uniform_sampling_triangle(triangle, holes):
 
     normal = np.cross(normalized_edge1, normalized_edge2)
 
+    # 1. Compute a 2d frame lying on the plane defined from the triangle and with center into the first vertex of the
+    # triangle
     frame_2d = plane_2d_frame(triangle[0], normal, edge1)
 
+    # 2. Compute the coordinates of the vertices into the 2d frame just defined by projection.
     triangle2d = [project_point_to_2d_frame(frame_2d, triangle[0]),
                   project_point_to_2d_frame(frame_2d, triangle[1]),
                   project_point_to_2d_frame(frame_2d, triangle[2])]
 
+    # 3. Same thing as point 2 but for the mounting holes.
     centers = []
     for hole in holes:
         center = project_point_to_2d_frame(frame_2d, hole)
         centers.append(center)
 
+    # up vector is z
     up = np.array((0, 0, 1))
 
     rectangles = []
 
+    # 4. Sample the surface of the triangle.
     for u in np.linspace(0, 1, 10):
         for v in np.linspace(0, 1, 10):
             if u + v <= 1.0:
+                # 5. Compute the orientation of the LED in 3d space.
                 point = triangle[0] + u*edge1 + v*edge2
                 pi_normal = np.cross(point, up)
 
@@ -101,6 +108,7 @@ def uniform_sampling_triangle(triangle, holes):
 
                 point2d = project_point_to_2d_frame(frame_2d, point)
 
+                # 6. Project the center of the LED and its direction pointing to z into the 2d frame.
                 origin2d, direction2d = project_vector_to_2d_frame(frame_2d, point, direction)
 
                 if not np.isnan(direction2d[0]) and not np.isnan(direction2d[1]):
