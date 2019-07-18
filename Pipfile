@@ -8,10 +8,11 @@ numpy = "*"
 matplotlib = "*"
 ezdxf = "*"
 dxfgrabber = "*"
+requests="*"
 
 [dev-packages]
 pre-commit = "*"
 coala = "*"
 
 [requires]
-python_version = "2.7"
+python_version = "3.6"
