@@ -3,6 +3,7 @@ from pcbnew import BOARD
 from argparse import ArgumentParser
 from .utilities.dxf import traverse_dxf
 from .actions.placing import ComponentPlacing
+from .actions.draw import DrawInLayer
 
 
 def main():
@@ -13,6 +14,13 @@ def main():
     dxf_filename = ns.dxf
 
     board = BOARD()
+
+    layertable = {}
+    numlayers = pcbnew.PCB_LAYER_ID_COUNT
+    for i in range(numlayers):
+        layertable[board.GetLayerName(i)] = i
+
     action = ComponentPlacing(board)
-    traverse_dxf(dxf_filename)
-    board.Save("filename")
+    draw_action = DrawInLayer(board, layertable["Edge.Cuts"])
+    traverse_dxf(dxf_filename, [draw_action])
+    board.Save("filename.kicad_pcb")
