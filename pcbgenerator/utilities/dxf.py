@@ -13,3 +13,4 @@ def traverse_dxf(filepath):
             print("ARC")
         elif e.dxftype == "LWPOLYLINE":
             print("LWPOLYLINE")
+            print(e)
