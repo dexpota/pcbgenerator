@@ -1,18 +1,18 @@
 from dxfgrabber.dxfentities import DXFEntity
 
 
-class IsInstance:
+class InLayer:
     """
     This rule checks that entity is of the given instance.
     """
 
-    def __init__(self, t):
+    def __init__(self, layer):
         """
 
-        :param type:
-        :type type: type
+        :param layer:
+        :type layer: str
         """
-        self.t = t
+        self.layer = layer
         pass
 
     def __call__(self, entity):
@@ -23,4 +23,4 @@ class IsInstance:
         :return:
         :rtype: bool
         """
-        return type(entity) == self.t
+        return entity.layer == self.layer

@@ -1,4 +1,5 @@
 import dxfgrabber
+from dxfgrabber.dxfentities import DXFEntity
 
 
 class ActionApplication:
@@ -29,7 +30,7 @@ def traverse_dxf(filepath, applications=None):
 
     dxf = dxfgrabber.readfile(filepath)
 
-    for e in dxf.entities.get_entities():
+    for e in dxf.entities.get_entities():  # type: DXFEntity
 
         for application in applications:
             if all(map(lambda x: x(e), application.rules)):
@@ -43,4 +44,5 @@ def traverse_dxf(filepath, applications=None):
             print("ARC")
         elif e.dxftype == "LWPOLYLINE":
             print("LWPOLYLINE")
-            print(e)
+        print(f"{e.layer}")
+

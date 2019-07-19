@@ -28,7 +28,7 @@ class DrawInLayer:
         :type entity: DXFEntity
         :return:
         """
-        if entity is LWPolyline:
+        if type(entity) is LWPolyline:
             self._draw(entity)
         else:
             raise NotImplemented(f"{self.__class__.__name__}: this action currently support only LWPolyline")
