@@ -9,9 +9,11 @@ from .actions.draw import DrawInLayer
 def main():
     parser = ArgumentParser(description="pcbgenerator is a tool to create pcb designs starting from dxf files.")
     parser.add_argument("dxf", help="Path to the dxf file.")
+    parser.add_argument("--output", "-o", required=True, help="Filename of output file.")
     ns = parser.parse_args()
 
     dxf_filename = ns.dxf
+    pcb_filename = ns.output
 
     board = BOARD()
 
@@ -23,4 +25,4 @@ def main():
     action = ComponentPlacing(board)
     draw_action = DrawInLayer(board, layertable["Edge.Cuts"])
     traverse_dxf(dxf_filename, [draw_action])
-    board.Save("filename.kicad_pcb")
+    board.Save(f"{pcb_filename}.kicad_pcb")
