@@ -1,4 +1,4 @@
-from dxfgrabber.dxfentities import LWPolyline
+from dxfgrabber.dxfentities import LWPolyline, DXFEntity
 from pcbnew import BOARD
 import pcbnew
 import math
@@ -7,7 +7,7 @@ from ..utilities.kicad import pcbpoint
 
 class DrawInLayer:
     """
-    This action draw a LWPOLYLINE inside a specific layer.
+    This action draw a DXFEntity inside a specific layer.
     """
 
     def __init__(self, board, layer):
@@ -25,11 +25,13 @@ class DrawInLayer:
         """
 
         :param entity:
-        :type entity: LWPolyline
+        :type entity: DXFEntity
         :return:
         """
-        assert(entity is LWPolyline, "entity works only on LWPolyline")
-        self._draw(entity)
+        if entity is LWPolyline:
+            self._draw(entity)
+        else:
+            raise NotImplemented(f"{self.__class__.__name__}: this action currently support only LWPolyline")
 
     def create_basic_segment(self):
         seg = pcbnew.DRAWSEGMENT(self.board)
@@ -50,9 +52,6 @@ class DrawInLayer:
         for pnt in points:
             ppt = pcbpoint(pnt[0], pnt[1]).wxpoint()
             outline.Append(ppt[0], ppt[1])
-
-        count = sps.OutlineCount()
-        point_count = sps.Outline(0).PointCount()
 
 
 def bulge_to_arc(p0, p1, bulge):

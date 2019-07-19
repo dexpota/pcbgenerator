@@ -1,9 +1,11 @@
 import pcbnew
 from pcbnew import BOARD
 from argparse import ArgumentParser
-from .utilities.dxf import traverse_dxf
+from .utilities.dxf import traverse_dxf, ActionApplication
 from .actions.placing import ComponentPlacing
 from .actions.draw import DrawInLayer
+from .rules.IsInstance import IsInstance
+from dxfgrabber.dxfentities import LWPolyline
 
 
 def main():
@@ -23,6 +25,11 @@ def main():
         layertable[board.GetLayerName(i)] = i
 
     action = ComponentPlacing(board)
+
+    rule = IsInstance(LWPolyline)
     draw_action = DrawInLayer(board, layertable["Edge.Cuts"])
-    traverse_dxf(dxf_filename, [draw_action])
+
+    application = ActionApplication(draw_action, [rule])
+
+    traverse_dxf(dxf_filename, [application])
     board.Save(f"{pcb_filename}.kicad_pcb")
