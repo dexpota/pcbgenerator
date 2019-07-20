@@ -25,14 +25,16 @@ def main():
     for i in range(numlayers):
         layertable[board.GetLayerName(i)] = i
 
-    action = ComponentPlacing(board)
-
     lwpolyline_rule = IsInstance(LWPolyline)
     inlayer_rule = InLayer("outline")
 
     draw_action = DrawInLayer(board, layertable["Edge.Cuts"])
-
     application = ActionApplication(draw_action, [lwpolyline_rule, inlayer_rule])
 
-    traverse_dxf(dxf_filename, [application])
+    footprint = pcbnew.FootprintLoad("/usr/share/kicad/modules/MountingHole.pretty", "MountingHole_3.2mm_M3")
+    inlayer_rule_mounting_holes = InLayer("mounting_holes")
+    placing = ComponentPlacing(board, footprint)
+    application2 = ActionApplication(placing, [inlayer_rule_mounting_holes])
+
+    traverse_dxf(dxf_filename, [application, application2])
     board.Save(f"output/{pcb_filename}.kicad_pcb")
