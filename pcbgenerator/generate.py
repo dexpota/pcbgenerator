@@ -36,5 +36,10 @@ def main():
     placing = ComponentPlacing(board, footprint)
     application2 = ActionApplication(placing, [inlayer_rule_mounting_holes])
 
-    traverse_dxf(dxf_filename, [application, application2])
+    led_footprint = pcbnew.FootprintLoad("/home/fabrizio/.config/kicad/footprints/kicad-libraries/leds.pretty", "SK6412_BIG_PAD")
+    inlayer_rule_led = InLayer("footprint")
+    placing2 = ComponentPlacing(board, led_footprint)
+    application3 = ActionApplication(placing2, [inlayer_rule_led])
+
+    traverse_dxf(dxf_filename, [application, application2, application3])
     board.Save(f"output/{pcb_filename}.kicad_pcb")
